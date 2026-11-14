@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="AhoCorasick.Lib/AhoCorasick.Lib.csproj" />
+  <Project Path="AhoCorasick.Tests/AhoCorasick.Tests.csproj" />
+  <Project Path="AhoCorasick/AhoCorasick.csproj" />
+</Solution>

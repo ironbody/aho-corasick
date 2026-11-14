@@ -1,0 +1,46 @@
+{
+  "TUnit test": {
+    "scope": "csharp",
+    "prefix": "test",
+    "description": "TUnit async test method",
+    "body": [
+      "[Test]",
+      "public async Task ${1:TestName}()",
+      "{",
+      "\t$0",
+      "}"
+    ]
+  },
+  "TUnit parameterized test": {
+    "scope": "csharp",
+    "prefix": "testargs",
+    "description": "TUnit test with [Arguments] data rows",
+    "body": [
+      "[Test]",
+      "[Arguments(${3:\"input\"}, ${4:expected})]",
+      "public async Task ${1:TestName}(${2:string input, int expected})",
+      "{",
+      "\t$0",
+      "}"
+    ]
+  },
+  "TUnit test class": {
+    "scope": "csharp",
+    "prefix": "testclass",
+    "description": "New TUnit test file for AhoCorasick.Tests",
+    "body": [
+      "using AhoCorasick.Lib;",
+      "",
+      "namespace AhoCorasick.Tests;",
+      "",
+      "public class ${1:${TM_FILENAME_BASE}}",
+      "{",
+      "\t[Test]",
+      "\tpublic async Task ${2:TestName}()",
+      "\t{",
+      "\t\t$0",
+      "\t}",
+      "}"
+    ]
+  }
+}
