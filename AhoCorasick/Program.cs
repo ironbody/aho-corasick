@@ -2,4 +2,7 @@
 
 Trie trie = new();
 
-Console.WriteLine("Hello, World!");
+trie.AddString("ABC");
+trie.AddString("AEF");
+
+Console.WriteLine(trie.Print());
