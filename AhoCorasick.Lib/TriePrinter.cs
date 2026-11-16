@@ -13,15 +13,15 @@ public static class TriePrinter
 
         foreach (var (idx, vert) in trie.Vertices.Index())
         {
-            for (var i = 0; i < vert.Next.Length; i++)
+            for (var i = 0; i < vert.Children.Length; i++)
             {
-                if (vert.Next[i] == -1)
+                if (vert.Children[i] == -1)
                 {
                     continue;
                 }
 
                 var letter = Convert.ToChar('a' + i);
-                var vertex = vert.Next[i];
+                var vertex = vert.Children[i];
                 sb.AppendLine($"{vertex}:{letter}");
                 sb.AppendLine($"{idx}->{vertex}");
             }

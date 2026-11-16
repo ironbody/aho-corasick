@@ -2,7 +2,8 @@
 
 Trie trie = new();
 
-trie.AddString("ABC");
-trie.AddString("AEF");
+trie.AddString("ABCDEFG");
+trie.AddString("ZXCABCWER");
+
 
 Console.WriteLine(trie.Print());
