@@ -81,6 +81,8 @@ public class TrieBuilder
             }
         }
 
+        alreadyConstructed = true;
+
         return new Trie(Vertices);
     }
 }

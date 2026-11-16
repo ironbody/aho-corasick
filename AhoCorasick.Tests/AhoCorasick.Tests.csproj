@@ -4,9 +4,6 @@
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
     <TargetFramework>net11.0</TargetFramework>
-
-    <IsAotCompatible>true</IsAotCompatible>
-    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
   </PropertyGroup>
 
   <ItemGroup>
