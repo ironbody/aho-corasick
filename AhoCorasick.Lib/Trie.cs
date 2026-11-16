@@ -5,95 +5,110 @@ namespace AhoCorasick.Lib;
 
 public class Trie
 {
-    public const int AlphabetSize = 26;
+    public List<Node> Vertices;
 
-    public List<Vertex> Vertices = [new Vertex()];
+    internal Trie(List<Node> vertices)
+    {
+        Vertices = vertices;
+    }
+
+    public Node Root => Vertices[0];
+};
+
+public class TrieBuilder
+{
+    public List<Node> Vertices = [new()];
+    public Node Root => Vertices[0];
+    private bool alreadyConstructed = false;
 
     public void AddString(string str)
     {
-        str = str.ToLowerInvariant();
+        if (alreadyConstructed)
+        {
+            throw new InvalidOperationException("Can't add strings to already built triebuilder");
+        }
+        if (string.IsNullOrEmpty(str))
+        {
+            return;
+        }
 
-        int current = 0;
+        Node current = Root;
 
         foreach (char character in str)
         {
-            int letterIdx = character - 'a';
-
-            var linkedEdge = Vertices[current].Children[letterIdx];
-
-            if (linkedEdge != -1)
+            if (current.Children.TryGetValue(character, out var linkedEdge))
             {
                 current = linkedEdge;
                 continue;
             }
 
-            Vertices.Add(new Vertex(current, character));
+            var justAdded = new Node(current, character);
+            Vertices.Add(justAdded);
 
-            var justAdded = Vertices.Count - 1;
-
-            Vertices[current].Children[letterIdx] = justAdded;
+            current.Children[character] = justAdded;
             current = justAdded;
         }
 
-        var outputVertex = Vertices[current];
-        outputVertex.Output = true;
-        Vertices[current] = outputVertex;
+        current.Outputs.Add(str);
     }
 
-    public void Build()
+    public Trie Build()
     {
-        Vertices[0] = Vertices[0] with {Fail = 0};
-        var root = Vertices[0];
+        Root.Fail = Root;
 
-        Queue<int> queue = new();
+        Queue<Node> queue = new();
 
-        foreach (var child in root.Children.Where(c => c != -1))
+        foreach (var (_, child) in Root.Children)
         {
-            Vertices[child] = Vertices[child] with { Fail = 0 };
+            child.Fail = Root;
             queue.Enqueue(child);
         }
 
-        while (queue.TryDequeue(out int node))
+        while (queue.TryDequeue(out var vert))
         {
-            var vert = Vertices[node];
-            foreach (var (idx, child) in vert.Children.Index().Where((c) => c.Item != -1))
+            foreach (var (key, child) in vert.Children)
             {
                 queue.Enqueue(child);
-                var link = vert.Fail;
-                while (!Vertices[link].HasChild(idx) && link != 0)
+                var link = vert.Fail!;
+                while (!link.HasChild(key) && link != Root)
                 {
-                    link = Vertices[link].Fail;
+                    link = link.Fail!;
                 }
-                var childFailLink =
-                    Vertices[link].Children[idx] != -1 ? Vertices[link].Children[idx] : 0;
-                var childOutput = Vertices[childFailLink].Output;
-                Vertices[child] = Vertices[child] with
-                {
-                    Fail = childFailLink,
-                    Output = childOutput,
-                };
+
+                var childFailLink = link.Children.GetValueOrDefault(key) ?? Root;
+                child.Fail = childFailLink;
+                child.CopyOutputs(childFailLink);
             }
         }
+
+        return new Trie(Vertices);
+    }
+}
+
+public class Node
+{
+    public Dictionary<char, Node> Children = [];
+    public HashSet<string> Outputs = [];
+    public Node? Fail = null;
+    public Node? Parent = null;
+    public char Character = '$';
+
+    public Node()
+        : this(null, '$') { }
+
+    public Node(Node? parent, char character)
+    {
+        Parent = parent;
+        Character = character;
     }
 
-    public struct Vertex
+    public bool HasChild(char key) => Children.ContainsKey(key);
+
+    public void CopyOutputs(Node other)
     {
-        public int[] Children = new int[AlphabetSize];
-        public bool Output = false;
-        public int Fail = -1;
-        public int Parent = -1;
-        public char Character = '$';
-
-        public Vertex()
-            : this(-1, '$') { }
-
-        public Vertex(int parent, char character)
+        foreach (var o in other.Outputs)
         {
-            Parent = parent;
-            Character = character;
-            Array.Fill(Children, -1);
+            Outputs.Add(o);
         }
-
-        public readonly bool HasChild(int idx) => Children[idx] != -1;
     }
 }
